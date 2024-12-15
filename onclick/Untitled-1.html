@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>JavaScript HTML Events</h1>
+<h2>The onclick Attribute</h2>
+
+<button onclick="this.innerHTML=Date()">The time is?</button>
+<br>
+<br>
+
+<button onclick="document.getElementById('demo').innerHTML=Date()">The time is?</button>
+<button onmouseover="document.getElementById('con').innerHTML=Date()">The time is?</button>
+<p id="con">ted</p>
+
+<p id="demo">aerg</p>
+<button onclick="displayDate()">The time is?</button>
+<!-- onmouseover	 -->
+<script>
+function displayDate() {
+  document.getElementById("dep").innerHTML = Date();
+}
+</script>
+<!-- template -->
+<p id="dep"></p>
+<script src="let date = new Date();.js"></script>
+
+<p id="qwer"></p>
+
+<p>Templates are not supported in Internet Explorer.</p>
+
+<script>
+let tet =
+
+`The quick
+brown fox
+jumps over
+the lazy dog`;
+
+document.getElementById("qwer").innerHTML = tet;
+</script>
+</body>
+</html>

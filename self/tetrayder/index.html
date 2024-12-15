@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotating Tetrahedron</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+
+        /* Стили для блока информации */
+        #info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Блок для отображения информации -->
+    <div id="info">
+        <p><strong>Edge Length:</strong> <span id="edge-length">1.0</span> cm</p>
+        <p><strong>Volume:</strong> <span id="volume">0.0</span> cm³</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Сцена, камера и рендер
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Включение теней
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        // Геометрия тетраэдра (длина ребра = 1 единица)
+        const geometry = new THREE.TetrahedronGeometry(1);  // Размер тетраэдра - 1 единица
+        const material = new THREE.MeshStandardMaterial({ color: 0x0000ff });  // Сплошной синий цвет
+        const tetrahedron = new THREE.Mesh(geometry, material);
+        tetrahedron.castShadow = true;  // Включаем отбрасывание тени для тетраэдра
+        tetrahedron.receiveShadow = true;  // Включаем получение тени на тетраэдре
+        scene.add(tetrahedron);
+
+        // Освещение
+        const light = new THREE.PointLight(0xffffff, 1, 100);
+        light.position.set(5, 5, 5);
+        light.castShadow = true;  // Включаем отбрасывание тени для света
+        scene.add(light);
+
+        // Камера на расстоянии от объекта
+        camera.position.z = 3;
+
+        // Плоскость для получения тени
+        const planeGeometry = new THREE.PlaneGeometry(100, 100);
+        const planeMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.rotation.x = - Math.PI / 2;
+        plane.position.y = -1;
+        plane.receiveShadow = true;
+        scene.add(plane);
+
+        // Функция для расчета объема тетраэдра
+        function calculateVolume(edgeLengthInCm) {
+            return (Math.sqrt(2) / 12) * Math.pow(edgeLengthInCm, 3);  // Формула для объема тетраэдра в см³
+        }
+
+        // Анимация
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Поворот тетраэдра
+            tetrahedron.rotation.x += 0.01;
+            tetrahedron.rotation.y += 0.01;
+
+            // Длина ребра тетраэдра (все ребра одинаковые)
+            const edgeLength = geometry.parameters.radius * 100; // Переводим в сантиметры
+
+            // Расчет объема
+            const volume = calculateVolume(edgeLength);
+
+            // Обновление информации на странице
+            document.getElementById('edge-length').textContent = edgeLength.toFixed(2);  // Длина ребра в см
+            document.getElementById('volume').textContent = volume.toFixed(2);  // Объем в см³
+
+            // Рендер сцены
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Обработчик изменения размера окна
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
